@@ -1,0 +1,71 @@
+# Compiled class files
+*.class
+
+# Log files
+logs/
+*.log
+
+# Build directories
+target/
+bin/
+out/
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Maven dependencies
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle files
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Temporary files
+*.swp
+*.swo
+*.swn
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables and secret files
+.env
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+
+# Node.js if front-end dependencies are included
+node_modules/
+npm-debug.log
+
+# JetBrains specific
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Lombok cache
+.lombok-cache/
+
+# Spring Boot devtools
+spring-boot-devtools.properties
+
+# Database files
+*.h2.db
+*.mv.db
+*.sql
+
+# Docker
+docker-compose.override.yml
