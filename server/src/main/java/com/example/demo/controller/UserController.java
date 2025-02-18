@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,6 +53,15 @@ public class UserController {
         Optional<User> userOpt = userRepository.findByGithubId(githubId);
         // If present, return that user object; otherwise return null.
         return userOpt.orElse(null);
+    }
+
+    /**
+     * Public endpoint to fetch all users
+     * @return List of all users
+     */
+    @GetMapping("/public/all")
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     // Example of a public endpoint (no login needed)

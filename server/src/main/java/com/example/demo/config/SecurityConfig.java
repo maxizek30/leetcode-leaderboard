@@ -33,17 +33,20 @@ public class SecurityConfig {
                 // Step 1: Authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Permit everyone to access "/", "/public/**", and the default "/error" page.
-                        .requestMatchers("/", "/public/**", "/error").permitAll()
+                        .requestMatchers("/", "/public/**", "/error", "/user/public/**").permitAll()
                         // For all other URLs, the user must be authenticated (logged in).
                         .anyRequest().authenticated()
                 )
                 // Step 2: Enable OAuth2 login with default settings.
                 // This triggers the GitHub login flow if a user hits a protected endpoint while unauthenticated.
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        // This will redirect to your React app after successful login
+                        .defaultSuccessUrl("http://localhost:5173", true)
+                )
                 // Step 3: (Optional) Logout configuration
                 .logout(logout -> logout
                         // After logging out, redirect the user to "/".
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("http://localhost:5173")
                         .permitAll()
                 );
         // Build and return the configured SecurityFilterChain.
