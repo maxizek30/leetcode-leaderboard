@@ -28,22 +28,34 @@ function UserList() {
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>Error: {error}</div>;
   return (
-    <div className="user-list">
-      <h2>Users</h2>
-      <div className="user-grid">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Easy</th>
+          <th scope="col">Medium</th>
+          <th scope="col">Hard</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
         {users.map((user) => (
-          <div key={user.id} className="user-card">
-            <img
-              src={user.avatarUrl}
-              alt={`${user.login}'s avatar`}
-              className="user-avatar"
-            />
-            <h3>{user.name || user.login}</h3>
-            {user.email && <p>{user.email}</p>}
-          </div>
+          <tr key={user.id}>
+            <th scope="row">
+              <img
+                src={user.avatarUrl}
+                alt={`${user.login}'s avatar`}
+                style={{ width: "100px" }}
+              />
+            </th>
+            <td>{user.name}</td>
+            <td>{user.login}</td>
+          </tr>
         ))}
-      </div>
-    </div>
+      </tbody>
+    </table>
   );
 }
 

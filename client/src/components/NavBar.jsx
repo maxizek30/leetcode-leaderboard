@@ -1,35 +1,16 @@
-import { useEffect, useState } from "react";
 import { IoPersonCircle } from "react-icons/io5";
+import { useUser } from "../contexts/UserContext";
+import { useModal } from "../contexts/ModalContext";
 
 export default function NavBar() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUser();
+  const { handleOpen } = useModal();
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-
-  useEffect(() => {
-    fetch(`${apiUrl}/user`, {
-      credentials: "include", // Important! This sends cookies
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Not logged in");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setUser(data);
-      })
-      .catch((err) => {
-        console.log("User not logged in or error:", err);
-      })
-      .finally(() => setLoading(false));
-  }, [apiUrl]);
 
   if (loading) return <div>Loading...</div>;
 
   const handleLogin = () => {
-    // Direct redirect to the backend auth endpoint
     window.location.href = `${apiUrl}/oauth2/authorization/github`;
   };
 
@@ -43,14 +24,18 @@ export default function NavBar() {
       <ul>
         <li>
           {user ? (
-            <img
-              src={user.avatarUrl}
-              alt="User Avatar"
-              style={{ width: 40, height: 40, borderRadius: "50%" }}
-              onClick={() => {
-                // Handle profile click
-              }}
-            />
+            <a
+              data-tooltip="Settings"
+              data-placement="bottom"
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={user.avatarUrl}
+                alt="User Avatar"
+                style={{ width: 40, height: 40, borderRadius: "50%" }}
+                onClick={handleOpen}
+              />
+            </a>
           ) : (
             <IoPersonCircle
               style={{ fontSize: "40px", cursor: "pointer" }}
