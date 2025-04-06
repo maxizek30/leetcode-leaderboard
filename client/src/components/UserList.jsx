@@ -5,7 +5,8 @@ function UserList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const leetcodeApiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     fetch(`${apiUrl}/user/public/all`)
@@ -15,8 +16,28 @@ function UserList() {
         }
         return response.json();
       })
-      .then((data) => {
-        setUsers(data);
+      .then(async (data) => {
+        const enhancedUsers = await Promise.all(
+          data.map(async (user) => {
+            try {
+              const res = await fetch(
+                `${leetcodeApiUrl}/${user.leetcodeUsername}/solved`
+              );
+              const live = await res.json();
+
+              const diffStats = {
+                easy: live.easySolved - user.snapshotEasyCount,
+                medium: live.mediumSolved - user.snapshotMediumCount,
+                hard: live.hardSolved - user.snapshotHardCount,
+              };
+              return { ...user, diffStats };
+            } catch (err) {
+              console.log("Failed to fetch stats for", user.leetcodeUsername);
+              return { ...user, diffStats: null };
+            }
+          })
+        );
+        setUsers(enhancedUsers);
       })
       .catch((err) => {
         setError(err.message);
@@ -52,6 +73,15 @@ function UserList() {
             </th>
             <td>{user.name}</td>
             <td>{user.login}</td>
+            <td>+{user.diffStats.easy}</td>
+            <td>+{user.diffStats.medium}</td>
+            <td>+{user.diffStats.hard}</td>
+            <td>
+              +
+              {user.diffStats.easy +
+                user.diffStats.medium +
+                user.diffStats.hard}
+            </td>
           </tr>
         ))}
       </tbody>

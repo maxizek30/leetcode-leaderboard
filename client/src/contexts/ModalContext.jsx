@@ -7,14 +7,13 @@ const useModal = () => useContext(ModalContext);
 const ModalProvider = ({ children, ...props }) => {
   const isSSR = typeof window === "undefined";
   const htmlTag = !isSSR && document.querySelector("html");
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modals, setModals] = useState({});
   const modalAnimationDuration = 400;
 
-  // Handle open
-  const handleOpen = (event) => {
-    event.preventDefault();
+  const handleOpen = (event, modalName) => {
+    event?.preventDefault?.();
     if (htmlTag) {
-      setModalIsOpen(true);
+      setModals((prev) => ({ ...prev, [modalName]: true }));
       htmlTag.classList.add("modal-is-open", "modal-is-opening");
       setTimeout(() => {
         htmlTag.classList.remove("modal-is-opening");
@@ -22,31 +21,45 @@ const ModalProvider = ({ children, ...props }) => {
     }
   };
 
-  // Handle close
-  const handleClose = (event) => {
-    event.preventDefault();
+  const handleClose = (event, modalName) => {
+    event?.preventDefault?.();
     if (htmlTag) {
       htmlTag.classList.add("modal-is-closing");
       setTimeout(() => {
-        setModalIsOpen(false);
-        htmlTag.classList.remove("modal-is-open", "modal-is-closing");
+        setModals((prev) => {
+          const newModals = { ...prev, [modalName]: false };
+          const anyModalStillOpen = Object.values(newModals).some(Boolean);
+          if (!anyModalStillOpen) {
+            htmlTag.classList.remove("modal-is-open", "modal-is-closing");
+          } else {
+            htmlTag.classList.remove("modal-is-closing");
+          }
+          return newModals;
+        });
       }, modalAnimationDuration);
     }
   };
 
+  const isOpen = (modalName) => !!modals[modalName];
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (event) => {
-      if (!modalIsOpen) return;
+      if (!Object.values(modals).some(Boolean)) return;
       if (event.key === "Escape") {
-        handleClose(event);
+        // Close all open modals
+        Object.keys(modals).forEach((modalName) => {
+          if (modals[modalName]) {
+            handleClose(event, modalName);
+          }
+        });
       }
     };
     window.addEventListener("keydown", handleEscape);
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [modalIsOpen]);
+  }, [modals]);
 
   // Set scrollbar width on mount
   useEffect(() => {
@@ -60,9 +73,11 @@ const ModalProvider = ({ children, ...props }) => {
   return (
     <ModalContext.Provider
       value={{
-        modalIsOpen,
+        modals,
         handleOpen,
         handleClose,
+        isOpen,
+        modalAnimationDuration,
         ...props,
       }}
     >

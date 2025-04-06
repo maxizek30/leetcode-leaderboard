@@ -6,7 +6,7 @@ export default function NavBar() {
   const { user, loading } = useUser();
   const { handleOpen } = useModal();
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   if (loading) return <div>Loading...</div>;
 
@@ -33,13 +33,13 @@ export default function NavBar() {
                 src={user.avatarUrl}
                 alt="User Avatar"
                 style={{ width: 40, height: 40, borderRadius: "50%" }}
-                onClick={handleOpen}
+                onClick={(e) => handleOpen(e, "userModal")}
               />
             </a>
           ) : (
             <IoPersonCircle
               style={{ fontSize: "40px", cursor: "pointer" }}
-              onClick={handleLogin}
+              onClick={(e) => handleOpen(e, "leetcodeUsernameModal")}
             />
           )}
         </li>
