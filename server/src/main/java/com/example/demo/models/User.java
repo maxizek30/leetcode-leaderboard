@@ -22,6 +22,7 @@ public class User {
     private int snapshotHardCount;
     private Date snapShotDate;
     private boolean userFlagged;
+    private String accessToken;
 
     public User() {}
 
@@ -143,5 +144,12 @@ public class User {
 
     public void setUserFlagged(boolean userFlagged) {
         this.userFlagged = userFlagged;
+    }
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

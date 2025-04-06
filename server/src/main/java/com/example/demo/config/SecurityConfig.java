@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,6 +16,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
  */
 @Configuration
 public class SecurityConfig {
+
+    @Value("${client.url}")
+    private String clientUrl;
 
     /**
      * Creates a SecurityFilterChain bean that Spring Security uses to decide:
@@ -37,16 +42,21 @@ public class SecurityConfig {
                         // For all other URLs, the user must be authenticated (logged in).
                         .anyRequest().authenticated()
                 )
+                //disable csrf for deleting users!
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/user", "/logout") // let DELETE through
+                )
                 // Step 2: Enable OAuth2 login with default settings.
                 // This triggers the GitHub login flow if a user hits a protected endpoint while unauthenticated.
                 .oauth2Login(oauth2 -> oauth2
                         // This will redirect to your React app after successful login
-                        .defaultSuccessUrl("http://localhost:5173", true)
+                        .defaultSuccessUrl(clientUrl, true)
                 )
                 // Step 3: (Optional) Logout configuration
                 .logout(logout -> logout
-                        // After logging out, redirect the user to "/".
-                        .logoutSuccessUrl("http://localhost:5173")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
                         .permitAll()
                 );
         // Build and return the configured SecurityFilterChain.

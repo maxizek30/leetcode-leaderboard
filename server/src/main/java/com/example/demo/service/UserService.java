@@ -3,7 +3,8 @@ package com.example.demo.service;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,15 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    @Value("${github.client-id}")
+    private String clientId;
+
+    @Value("${github.client-secret}")
+    private String clientSecret;
+
+    @Value("${leetcode.url}")
+    private String leetcodeUrl;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -51,13 +61,24 @@ public class UserService {
      * delete user account from database
      */
     public boolean deleteUser(OAuth2User principal) {
+
+
         if (principal == null) return false;
 
         String githubId = String.valueOf(principal.getAttributes().get("id"));
         Optional<User> userOpt = userRepository.findByGithubId(githubId);
 
         if(userOpt.isPresent()) {
-            userRepository.delete(userOpt.get());
+            User user = userOpt.get();
+
+            String token = user.getAccessToken();
+            if(token != null && !token.isEmpty()) {
+                revokeGithubToken(token);
+            } else {
+                System.out.println("Token is null");
+            }
+
+            userRepository.delete(user);
             return true;
         }
         return false;
@@ -94,7 +115,7 @@ public class UserService {
      * fetch user stat, fetch a user stat for an individual
      */
     public Map<String, Object> fetchUserStats(String leetcodeUsername) {
-        String url = "https://alfa-leetcode-api.onrender.com/" + leetcodeUsername + "/solved";
+        String url = leetcodeUrl + leetcodeUsername + "/solved";
 
         ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
 
@@ -111,4 +132,29 @@ public class UserService {
     public String helloPublic() {
         return "Hello from a public endpoint!";
     }
+    private void revokeGithubToken(String token) {
+
+        if (clientId == null || clientSecret == null) {
+            throw new IllegalStateException("GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET is not set.");
+        }
+
+        String url = "https://api.github.com/applications/" + clientId + "/grant";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBasicAuth(clientId, clientSecret);
+
+        Map<String, String> body = Map.of("access_token", token);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+
+        try {
+            restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+            System.out.println("✅ GitHub authorization revoked.");
+        } catch (Exception e) {
+            System.out.println("⚠️ Failed to revoke GitHub token: " + e.getMessage());
+        }
+
+    }
+
 }
