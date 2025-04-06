@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import getScrollBarWidth from "./utils/getScrollBarWidth";
+import getScrollBarWidth from "./utils/GetScrollBarWidth";
 
 const ModalContext = createContext({});
 const useModal = () => useContext(ModalContext);
