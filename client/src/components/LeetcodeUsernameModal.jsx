@@ -25,7 +25,6 @@ export default function LeetcodeUsernameModal(props) {
 
       const data = await response.json();
 
-      console.log(data);
       if (!data?.username || data?.errors || data?.data?.matchedUser === null) {
         throw new Error("User not found");
       }

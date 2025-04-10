@@ -38,7 +38,6 @@ export default function UserModal(props) {
     fetchStats();
   }, [user]);
 
-  console.log(user);
   const handleClickOverlay = (event) => {
     if (event.target === event.currentTarget) {
       handleClose(event, "userModal");

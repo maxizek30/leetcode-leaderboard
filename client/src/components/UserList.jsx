@@ -6,7 +6,7 @@ function UserList() {
   const [error, setError] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const leetcodeApiUrl = import.meta.env.VITE_API_BASE_URL;
+  const leetcodeApiUrl = import.meta.env.VITE_API_LEETCODE_URL;
 
   useEffect(() => {
     fetch(`${apiUrl}/user/public/all`)
