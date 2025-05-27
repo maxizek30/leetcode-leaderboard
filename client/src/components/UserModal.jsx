@@ -9,7 +9,7 @@ export default function UserModal(props) {
   const [diffStats, setDiffStats] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const leetcodeApiUrl = import.meta.env.VITE_API_BASE_URL;
+  const leetcodeApiUrl = import.meta.env.VITE_API_LEETCODE_URL;
 
   useEffect(() => {
     const fetchStats = async () => {

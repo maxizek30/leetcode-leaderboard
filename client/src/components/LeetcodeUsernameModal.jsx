@@ -8,7 +8,7 @@ export default function LeetcodeUsernameModal(props) {
   const [isChecking, setIsChecking] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const leetcodeApiUrl = import.meta.env.VITE_API_BASE_URL;
+  const leetcodeApiUrl = import.meta.env.VITE_API_LEETCODE_URL;
 
   const handleClickOverlay = (event) => {
     if (event.target === event.currentTarget) {
