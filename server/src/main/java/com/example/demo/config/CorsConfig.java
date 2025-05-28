@@ -21,22 +21,21 @@ public class CorsConfig {
 
 
     @Bean
-   public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(clientUrl));
-
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
-
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+
+        // Add these specific cookie settings
+        config.setExposedHeaders(List.of("Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return source;
-
     }
 
 }
