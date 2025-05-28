@@ -44,11 +44,44 @@ public class UserService {
      * Fetches the user from DB by GitHub ID.
      */
     public User getCurrentUser(OAuth2User principal) {
-        if (principal == null) return null;
+        System.out.println("🔍 getCurrentUser called in UserService");
 
-        String githubId = String.valueOf(principal.getAttributes().get("id"));
-        Optional<User> userOpt = userRepository.findByGithubId(githubId);
-        return userOpt.orElse(null);
+        if (principal == null) {
+            System.out.println("❌ Principal is null in getCurrentUser");
+            return null;
+        }
+
+        try {
+            Object idObj = principal.getAttributes().get("id");
+            System.out.println("🔍 GitHub ID from principal: " + idObj);
+
+            String githubId = String.valueOf(idObj);
+            System.out.println("🔍 Looking for user with GitHub ID: " + githubId);
+
+            Optional<User> userOpt = userRepository.findByGithubId(githubId);
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                System.out.println("✅ Found user in DB: " + user.getLogin());
+                return user;
+            } else {
+                System.out.println("❌ No user found in DB with GitHub ID: " + githubId);
+
+                // Check what users exist
+                List<User> allUsers = userRepository.findAll();
+                System.out.println("🔍 Total users in database: " + allUsers.size());
+                for (User u : allUsers) {
+                    System.out.println("🔍 Existing user - Login: " + u.getLogin() + ", GitHub ID: " + u.getGithubId());
+                }
+
+                return null;
+            }
+
+        } catch (Exception e) {
+            System.out.println("💥 Error in getCurrentUser: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

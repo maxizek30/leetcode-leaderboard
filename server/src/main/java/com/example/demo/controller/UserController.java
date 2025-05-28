@@ -77,19 +77,44 @@ public class UserController {
         return ResponseEntity.ok("✅ All user stats reset successfully (from public endpoint).");
     }
     @GetMapping("/auth-status")
-    public ResponseEntity<Map<String, Object>> getAuthStatus(@AuthenticationPrincipal OAuth2User principal) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> getAuthStatus(@AuthenticationPrincipal OAuth2User principal, HttpServletRequest request) {
+        System.out.println("🔍 /auth-status called from IP: " + request.getRemoteAddr());
+        System.out.println("🔍 Request Origin: " + request.getHeader("Origin"));
+        System.out.println("🔍 Request Cookie header: " + request.getHeader("Cookie"));
+        System.out.println("🔍 Principal is null: " + (principal == null));
 
         if (principal != null) {
-            User user = userService.getCurrentUser(principal);
-            response.put("authenticated", true);
-            response.put("user", user);
-        } else {
-            response.put("authenticated", false);
-            response.put("user", null);
+            System.out.println("✅ User is authenticated");
+            System.out.println("🔍 Principal name: " + principal.getName());
+            System.out.println("🔍 Principal attributes: " + principal.getAttributes());
         }
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            if (principal != null) {
+                User user = userService.getCurrentUser(principal);
+                System.out.println("🔍 User from service: " + (user != null ? user.getLogin() : "null"));
+
+                response.put("authenticated", true);
+                response.put("user", user);
+            } else {
+                System.out.println("❌ User is not authenticated - principal is null");
+                response.put("authenticated", false);
+                response.put("user", null);
+            }
+
+            System.out.println("🔍 Response: " + response);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.out.println("💥 Error in getAuthStatus: " + e.getMessage());
+            e.printStackTrace();
+            response.put("authenticated", false);
+            response.put("user", null);
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
     //need a way to reset all user stats every night at 11:59pm
 }
