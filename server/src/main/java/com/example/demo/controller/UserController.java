@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,21 @@ public class UserController {
     public ResponseEntity<String> resetAllUserStatsPublic() {
         userService.resetAllUserStats();
         return ResponseEntity.ok("✅ All user stats reset successfully (from public endpoint).");
+    }
+    @GetMapping("/auth-status")
+    public ResponseEntity<Map<String, Object>> getAuthStatus(@AuthenticationPrincipal OAuth2User principal) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (principal != null) {
+            User user = userService.getCurrentUser(principal);
+            response.put("authenticated", true);
+            response.put("user", user);
+        } else {
+            response.put("authenticated", false);
+            response.put("user", null);
+        }
+
+        return ResponseEntity.ok(response);
     }
     //need a way to reset all user stats every night at 11:59pm
 }

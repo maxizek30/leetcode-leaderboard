@@ -38,7 +38,7 @@ public class SecurityConfig {
                 // Step 1: Authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Permit everyone to access "/", "/public/**", and the default "/error" page.
-                        .requestMatchers("/", "/public/**", "/error", "/user/public/**").permitAll()
+                        .requestMatchers("/", "/public/**", "/error", "/user/public/**", "/user/auth-status").permitAll()
                         // For all other URLs, the user must be authenticated (logged in).
                         .anyRequest().authenticated()
                 )

@@ -11,20 +11,17 @@ export const UserProvider = ({ children }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    fetch(`${apiUrl}/user`, {
-      credentials: "include", // Important! This sends cookies
+    fetch(`${apiUrl}/user/auth-status`, {
+      credentials: "include",
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Not logged in");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        setUser(data);
+        if (data.authenticated) {
+          setUser(data.user);
+        }
       })
       .catch((err) => {
-        console.log("User not logged in or error:", err);
+        console.log("Error checking auth status:", err);
       })
       .finally(() => setLoading(false));
   }, [apiUrl]);
