@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -85,18 +84,7 @@ public class AuthenticationSuccessListener {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = attr.getRequest();
 
-            String leetcodeUsername = null;
-            if(request.getCookies() != null) {
-                for(Cookie cookie : request.getCookies()) {
-                    if ("leetcodeUsername".equals(cookie.getName())) {
-                        leetcodeUsername = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-            if (leetcodeUsername != null) {
-                user.setLeetcodeUsername(leetcodeUsername);
-            }
+
 
             // Update fields
             user.setAccessToken(accessToken);

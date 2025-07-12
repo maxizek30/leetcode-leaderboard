@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +109,56 @@ public class UserController {
             e.printStackTrace();
             response.put("authenticated", false);
             response.put("user", null);
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    @PutMapping("/leetcode-username")
+    public ResponseEntity<Map<String, Object>> updateLeetcodeUsername(
+            @AuthenticationPrincipal OAuth2User principal,
+            @RequestBody Map<String, String> requestBody) {
+
+        System.out.println("🔍 /leetcode-username PUT called");
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            if (principal == null) {
+                System.out.println("❌ User not authenticated");
+                response.put("success", false);
+                response.put("message", "User not authenticated");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            String newLeetcodeUsername = requestBody.get("leetcodeUsername");
+
+            if (newLeetcodeUsername == null || newLeetcodeUsername.trim().isEmpty()) {
+                System.out.println("❌ Invalid leetcode username provided");
+                response.put("success", false);
+                response.put("message", "LeetCode username cannot be empty");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            User updatedUser = userService.updateLeetcodeUsername(principal, newLeetcodeUsername.trim());
+
+            if (updatedUser != null) {
+                System.out.println("✅ LeetCode username updated successfully");
+                response.put("success", true);
+                response.put("message", "LeetCode username updated and snapshot created successfully");
+                response.put("user", updatedUser);
+                return ResponseEntity.ok(response);
+            } else {
+                System.out.println("❌ Failed to update leetcode username");
+                response.put("success", false);
+                response.put("message", "Failed to update LeetCode username or create snapshot");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+
+        } catch (Exception e) {
+            System.out.println("💥 Error in updateLeetcodeUsername: " + e.getMessage());
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "An error occurred while updating LeetCode username");
             response.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

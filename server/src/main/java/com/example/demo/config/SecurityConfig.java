@@ -44,7 +44,7 @@ public class SecurityConfig {
                 )
                 //disable csrf for deleting users!
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/user", "/logout") // let DELETE through
+                        .ignoringRequestMatchers("/user", "/user/leetcode-username", "/logout") // let DELETE through
                 )
                 // Step 2: Enable OAuth2 login with default settings.
                 // This triggers the GitHub login flow if a user hits a protected endpoint while unauthenticated.

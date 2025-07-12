@@ -1,8 +1,7 @@
-# React + Vite
+## TODO
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [ ] Sort leaderboard by total count
+- [ ] Add, leetcode username already taken
+- [ ] Fix username not displaying
+- [ ] Add error when unable to fetch from something
+- [ ] Use DTO to only send important stuff

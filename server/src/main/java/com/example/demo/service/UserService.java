@@ -83,7 +83,6 @@ public class UserService {
             return null;
         }
     }
-
     /**
      * Fetch all users
      */
@@ -188,6 +187,78 @@ public class UserService {
             System.out.println("⚠️ Failed to revoke GitHub token: " + e.getMessage());
         }
 
+    }
+    // Add this method to your UserService class
+
+    /**
+     * Update leetcode username, reset avatar URL, and create new snapshot
+     */
+    public User updateLeetcodeUsername(OAuth2User principal, String newLeetcodeUsername) {
+        System.out.println("🔍 updateLeetcodeUsername called in UserService");
+
+        if (principal == null) {
+            System.out.println("❌ Principal is null");
+            return null;
+        }
+
+        try {
+            // Get current user
+            String githubId = String.valueOf(principal.getAttributes().get("id"));
+            Optional<User> userOpt = userRepository.findByGithubId(githubId);
+
+            if (!userOpt.isPresent()) {
+                System.out.println("❌ User not found with GitHub ID: " + githubId);
+                return null;
+            }
+
+            User user = userOpt.get();
+            System.out.println("✅ Found user: " + user.getLogin());
+
+            // Update leetcode username and reset avatar URL
+            user.setLeetcodeUsername(newLeetcodeUsername);
+            user.setLeetcodeAvatarUrl(null); // Reset avatar URL
+
+            System.out.println("🔍 Updated leetcode username to: " + newLeetcodeUsername);
+            System.out.println("🔍 Reset leetcode avatar URL");
+
+            // Fetch new stats from LeetCode
+            System.out.println("🔍 Fetching new stats for username: " + newLeetcodeUsername);
+            Map<String, Object> newUserStats = fetchUserStats(newLeetcodeUsername);
+
+            Date currentDate = new Date();
+
+            if (newUserStats.isEmpty()) {
+                System.out.println("⚠️ Could not fetch stats for user: " + newLeetcodeUsername);
+                System.out.println("🔍 Flagging user and keeping previous snapshot data");
+
+                // Flag the user but update the snapshot date
+                user.setUserFlagged(true);
+                user.setSnapShotDate(currentDate);
+            } else {
+                System.out.println("✅ Successfully fetched new stats");
+                System.out.println("🔍 Easy: " + newUserStats.get("easySolved"));
+                System.out.println("🔍 Medium: " + newUserStats.get("mediumSolved"));
+                System.out.println("🔍 Hard: " + newUserStats.get("hardSolved"));
+
+                // Update user with new stats
+                user.setUserFlagged(false);
+                user.setSnapShotDate(currentDate);
+                user.setSnapshotEasyCount((Integer) newUserStats.get("easySolved"));
+                user.setSnapshotMediumCount((Integer) newUserStats.get("mediumSolved"));
+                user.setSnapshotHardCount((Integer) newUserStats.get("hardSolved"));
+            }
+
+            // Save the updated user
+            User savedUser = userRepository.save(user);
+            System.out.println("✅ User saved successfully");
+
+            return savedUser;
+
+        } catch (Exception e) {
+            System.out.println("💥 Error in updateLeetcodeUsername: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

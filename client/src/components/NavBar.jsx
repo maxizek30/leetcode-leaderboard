@@ -39,7 +39,7 @@ export default function NavBar() {
           ) : (
             <IoPersonCircle
               style={{ fontSize: "40px", cursor: "pointer" }}
-              onClick={(e) => handleOpen(e, "leetcodeUsernameModal")}
+              onClick={handleLogin}
             />
           )}
         </li>
