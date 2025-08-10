@@ -124,16 +124,16 @@ export default function UserModal(props) {
   return (
     <dialog onClick={handleClickOverlay} open={isOpen("userModal")} {...props}>
       <article>
-        <header style={{ height: "45px" }}>
-          <button
-            aria-label="Close"
-            rel="prev"
-            onClick={(e) => handleClose(e, "userModal")}
-          ></button>
-        </header>
         {user ? (
           user.leetcodeUsername ? (
             <>
+              <header style={{ height: "45px" }}>
+                <button
+                  aria-label="Close"
+                  rel="prev"
+                  onClick={(e) => handleClose(e, "userModal")}
+                ></button>
+              </header>
               <div style={{ display: "flex", gap: "20px" }}>
                 <img src={user.avatarUrl} style={{ width: "30%" }} />{" "}
                 <CoderStatsTable user={user} />

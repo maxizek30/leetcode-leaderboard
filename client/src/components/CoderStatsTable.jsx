@@ -9,7 +9,7 @@ function CoderStatsTable({ user }) {
 
   useEffect(() => {
     const fetchStats = async () => {
-      console.log("User", user);
+      console.log("User in coderstats", user);
       if (!user?.leetcodeUsername) return;
 
       try {

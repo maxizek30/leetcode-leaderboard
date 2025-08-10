@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.models.User;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -37,8 +39,9 @@ public class UserController {
      * Fetches the current user's record from MongoDB using GitHub ID.
      */
     @GetMapping
-    public User getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
-        return userService.getCurrentUser(principal);
+    public UserDTO getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
+        User user = userService.getCurrentUser(principal);
+        return user != null ? UserDTO.fromUser(user) : null;
     }
     /**
      * Private endpoint to delete user
@@ -57,8 +60,11 @@ public class UserController {
      * Public endpoint to fetch all users.
      */
     @GetMapping("/public/all")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return users.stream()
+                .map(UserDTO::fromUser)
+                .collect(Collectors.toList());
     }
     /**
      * Public endpoint (no login needed).
@@ -91,10 +97,11 @@ public class UserController {
         try {
             if (principal != null) {
                 User user = userService.getCurrentUser(principal);
+                UserDTO userDTO = user != null ? UserDTO.fromUser(user) : null;
                 System.out.println("🔍 User from service: " + (user != null ? user.getLogin() : "null"));
 
                 response.put("authenticated", true);
-                response.put("user", user);
+                response.put("user", userDTO);
             } else {
                 System.out.println("❌ User is not authenticated - principal is null");
                 response.put("authenticated", false);
@@ -145,7 +152,7 @@ public class UserController {
                 System.out.println("✅ LeetCode username updated successfully");
                 response.put("success", true);
                 response.put("message", "LeetCode username updated and snapshot created successfully");
-                response.put("user", updatedUser);
+                response.put("user", UserDTO.fromUser(updatedUser));
                 return ResponseEntity.ok(response);
             } else {
                 System.out.println("❌ Failed to update leetcode username");
@@ -163,5 +170,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    //need a way to reset all user stats every night at 11:59pm
 }

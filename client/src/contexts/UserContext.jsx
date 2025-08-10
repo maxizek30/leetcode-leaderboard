@@ -17,6 +17,8 @@ export const UserProvider = ({ children }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.authenticated) {
+          console.log("Fetched User: ");
+          console.log(data.user);
           setUser(data.user);
         }
       })
