@@ -1,5 +1,5 @@
 import { useModal } from "../contexts/ModalContext";
-import CoderStatsTable from "./coderStatsTable";
+import CoderStatsTable from "./CoderStatsTable";
 
 function CoderModal(props) {
   const { handleClose, isOpen, getModalProps } = useModal();

@@ -1,7 +1,7 @@
 import { useModal } from "../contexts/ModalContext";
 import { useUser } from "../contexts/UserContext";
 import { useState } from "react";
-import CoderStatsTable from "./coderStatsTable";
+import CoderStatsTable from "./CoderStatsTable";
 
 export default function UserModal(props) {
   const { handleClose, isOpen } = useModal();
