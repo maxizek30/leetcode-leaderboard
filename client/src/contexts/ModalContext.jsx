@@ -8,12 +8,14 @@ const ModalProvider = ({ children, ...props }) => {
   const isSSR = typeof window === "undefined";
   const htmlTag = !isSSR && document.querySelector("html");
   const [modals, setModals] = useState({});
+  const [modalProps, setModalProps] = useState({}); // Store props for each modal
   const modalAnimationDuration = 400;
 
-  const handleOpen = (event, modalName) => {
+  const handleOpen = (event, modalName, props = {}) => {
     event?.preventDefault?.();
     if (htmlTag) {
       setModals((prev) => ({ ...prev, [modalName]: true }));
+      setModalProps((prev) => ({ ...prev, [modalName]: props }));
       htmlTag.classList.add("modal-is-open", "modal-is-opening");
       setTimeout(() => {
         htmlTag.classList.remove("modal-is-opening");
@@ -36,18 +38,25 @@ const ModalProvider = ({ children, ...props }) => {
           }
           return newModals;
         });
+        // Clear props when modal closes
+        setModalProps((prev) => {
+          const newProps = { ...prev };
+          delete newProps[modalName];
+          return newProps;
+        });
       }, modalAnimationDuration);
     }
   };
 
   const isOpen = (modalName) => !!modals[modalName];
 
+  const getModalProps = (modalName) => modalProps[modalName] || {};
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (event) => {
       if (!Object.values(modals).some(Boolean)) return;
       if (event.key === "Escape") {
-        // Close all open modals
         Object.keys(modals).forEach((modalName) => {
           if (modals[modalName]) {
             handleClose(event, modalName);
@@ -77,6 +86,7 @@ const ModalProvider = ({ children, ...props }) => {
         handleOpen,
         handleClose,
         isOpen,
+        getModalProps,
         modalAnimationDuration,
         ...props,
       }}

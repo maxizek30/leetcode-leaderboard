@@ -188,7 +188,6 @@ public class UserService {
         }
 
     }
-    // Add this method to your UserService class
 
     /**
      * Update leetcode username, reset avatar URL, and create new snapshot

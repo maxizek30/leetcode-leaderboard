@@ -1,12 +1,11 @@
 import { useModal } from "../contexts/ModalContext";
 import { useUser } from "../contexts/UserContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import CoderStatsTable from "./coderStatsTable";
 
 export default function UserModal(props) {
   const { handleClose, isOpen } = useModal();
   const { user, setUser } = useUser();
-  const [actualStats, setActualStats] = useState(null);
-  const [diffStats, setDiffStats] = useState(null);
   const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -14,39 +13,6 @@ export default function UserModal(props) {
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const leetcodeApiUrl = import.meta.env.VITE_API_LEETCODE_URL;
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      console.log("User", user);
-      if (!user?.leetcodeUsername) return;
-
-      try {
-        const response = await fetch(
-          `${leetcodeApiUrl}/${user.leetcodeUsername}/solved`
-        );
-        const data = await response.json();
-        if (data && data.easySolved != null) {
-          setActualStats(data);
-          console.log("Diff", {
-            easy: data.easySolved - user.snapshotEasyCount,
-            medium: data.mediumSolved - user.snapshotMediumCount,
-            hard: data.hardSolved - user.snapshotHardCount,
-          });
-          const diff = {
-            easy: data.easySolved - user.snapshotEasyCount,
-            medium: data.mediumSolved - user.snapshotMediumCount,
-            hard: data.hardSolved - user.snapshotHardCount,
-          };
-
-          setDiffStats(diff);
-        }
-      } catch (err) {
-        console.error("Failed to fetch LeetCode stats:", err);
-      }
-    };
-
-    fetchStats();
-  }, [user]);
 
   const handleClickOverlay = (event) => {
     if (event.target === event.currentTarget) {
@@ -158,7 +124,7 @@ export default function UserModal(props) {
   return (
     <dialog onClick={handleClickOverlay} open={isOpen("userModal")} {...props}>
       <article>
-        <header>
+        <header style={{ height: "45px" }}>
           <button
             aria-label="Close"
             rel="prev"
@@ -168,44 +134,25 @@ export default function UserModal(props) {
         {user ? (
           user.leetcodeUsername ? (
             <>
-              <img src={user.avatarUrl} width={"100px"} />
-              <h3>{user.name}</h3>
+              <div style={{ display: "flex", gap: "20px" }}>
+                <img src={user.avatarUrl} style={{ width: "30%" }} />{" "}
+                <CoderStatsTable user={user} />
+              </div>
+
+              <h4 style={{ marginBottom: "0px" }}>{user.name}</h4>
               <p>@{user.leetcodeUsername}</p>
-              {diffStats && (
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Easy</th>
-                      <th scope="col">Medium</th>
-                      <th scope="col">Hard</th>
-                      <th scope="col">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr key={user.id}>
-                      <th scope="row">+{diffStats.easy}</th>
-                      <td>+{diffStats.medium}</td>
-                      <td>+{diffStats.hard}</td>
-                      <td>
-                        +{diffStats.easy + diffStats.medium + diffStats.hard}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              )}
-              <footer>
-                <button
-                  className="secondary"
-                  onClick={handleChangeUsername}
-                  style={{ marginRight: "10px" }}
-                >
-                  Change Username
-                </button>
-              </footer>
             </>
           ) : (
             <>
-              <h3>Enter your LeetCode username</h3>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <h3>Enter your LeetCode username</h3>
+                <button
+                  aria-label="Close"
+                  rel="prev"
+                  onClick={(e) => handleClose(e, "userModal")}
+                ></button>
+              </div>
+
               <form onSubmit={handleSubmit}>
                 <fieldset role="group">
                   <input
@@ -235,6 +182,11 @@ export default function UserModal(props) {
           <p>No user data available.</p>
         )}
         <footer>
+          {user && user.leetcodeUsername && (
+            <button className="secondary" onClick={handleChangeUsername}>
+              Change Username
+            </button>
+          )}
           <button className="secondary" onClick={deleteUser}>
             Delete account
           </button>

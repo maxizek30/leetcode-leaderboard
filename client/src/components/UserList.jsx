@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useModal } from "../contexts/ModalContext";
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -7,6 +8,7 @@ function UserList() {
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const leetcodeApiUrl = import.meta.env.VITE_API_LEETCODE_URL;
+  const { handleOpen } = useModal();
 
   useEffect(() => {
     fetch(`${apiUrl}/user/public/all`)
@@ -81,7 +83,14 @@ function UserList() {
       </thead>
       <tbody>
         {sortedUsers.map((user, index) => (
-          <tr key={user.id}>
+          <tr
+            key={user.id}
+            onClick={(e) => {
+              handleOpen(e, "coderModal", { user: user });
+            }}
+            style={{ cursor: "pointer" }}
+            className="user-row"
+          >
             <td>{index + 1}</td>
             <td scope="row">
               <img

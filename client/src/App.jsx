@@ -6,11 +6,9 @@ import { ModalProvider } from "./contexts/ModalContext";
 import UserModal from "./components/UserModal";
 import { UserProvider } from "./contexts/UserContext";
 import LeetcodeUsernameModal from "./components/LeetcodeUsernameModal";
-import { useModal } from "./contexts/ModalContext";
+import CoderModal from "./components/CoderModal";
 
 function App() {
-  const { modals } = useModal();
-
   return (
     <>
       <UserProvider>
@@ -20,6 +18,7 @@ function App() {
             <UserList />
           </main>
           <UserModal />
+          <CoderModal />
           <LeetcodeUsernameModal />
         </ModalProvider>
       </UserProvider>
