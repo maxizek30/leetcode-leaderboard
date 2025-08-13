@@ -19,39 +19,59 @@ public class UserStatsScheduler {
     }
 
     /**
-     * Automatically reset all user stats every day at 6:00 PM
-     * Cron expression: "0 0 18 * * *"
+     * Reset all user stats every Sunday at 6:00 PM (weekly reset)
+     * Cron expression: "0 0 18 * * SUN"
      * - 0: seconds (0)
      * - 0: minutes (0)
      * - 18: hours (6 PM in 24-hour format)
      * - *: any day of month
      * - *: any month
-     * - *: any day of week
+     * - SUN: Sunday (0 = Sunday, 1 = Monday, etc.)
      */
-    @Scheduled(cron = "0 0 18 * * *")
-    public void resetAllUserStatsDaily() {
+    @Scheduled(cron = "0 0 18 * * SUN")
+    public void resetAllUserStatsWeekly() {
         try {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            System.out.println("🕕 [" + timestamp + "] Starting daily user stats reset...");
+            System.out.println("🕕 [" + timestamp + "] Starting weekly user stats reset (Sunday 6 PM)...");
 
             userService.resetAllUserStats();
 
-            System.out.println("✅ [" + timestamp + "] Daily user stats reset completed successfully!");
+            System.out.println("✅ [" + timestamp + "] Weekly user stats reset completed successfully!");
 
         } catch (Exception e) {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            System.out.println("💥 [" + timestamp + "] Error during daily stats reset: " + e.getMessage());
+            System.out.println("💥 [" + timestamp + "] Error during weekly stats reset: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Optional: Run stats reset every minute for testing purposes
-     * Uncomment this method if you want to test the scheduling functionality
-     * Remember to comment it out before production!
+     * Alternative: Reset every Monday at 12:00 AM (start of week)
      */
     /*
-    @Scheduled(fixedRate = 60000) // Every 60 seconds
+    @Scheduled(cron = "0 0 0 * * MON")
+    public void resetAllUserStatsWeeklyMonday() {
+        try {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            System.out.println("🕕 [" + timestamp + "] Starting weekly user stats reset (Monday 12 AM)...");
+
+            userService.resetAllUserStats();
+
+            System.out.println("✅ [" + timestamp + "] Weekly user stats reset completed successfully!");
+
+        } catch (Exception e) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            System.out.println("💥 [" + timestamp + "] Error during weekly stats reset: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    */
+
+    /**
+     * For testing: Reset every 2 minutes
+     */
+    /*
+    @Scheduled(fixedRate = 120000) // Every 2 minutes
     public void resetAllUserStatsForTesting() {
         try {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
