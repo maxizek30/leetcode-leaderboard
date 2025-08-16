@@ -7,6 +7,7 @@ import UserModal from "./components/UserModal";
 import { UserProvider } from "./contexts/UserContext";
 import LeetcodeUsernameModal from "./components/LeetcodeUsernameModal";
 import CoderModal from "./components/CoderModal";
+import InfoModal from "./components/InfoModal";
 
 function App() {
   return (
@@ -14,10 +15,19 @@ function App() {
       <UserProvider>
         <ModalProvider>
           <NavBar />
-          <main className="container" style={{ backgroundColor: "red" }}>
-            <UserList />
+          <main
+            className="container"
+            style={{
+              padding: "20px",
+              borderRadius: "25px",
+            }}
+          >
+            <article>
+              <UserList />
+            </article>
           </main>
           <UserModal />
+          <InfoModal />
           <CoderModal />
           <LeetcodeUsernameModal />
         </ModalProvider>

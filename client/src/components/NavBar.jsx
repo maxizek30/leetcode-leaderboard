@@ -1,6 +1,7 @@
 import { IoPersonCircle } from "react-icons/io5";
 import { useUser } from "../contexts/UserContext";
 import { useModal } from "../contexts/ModalContext";
+import leetcodeLogo from "../assets/LeetCode.png";
 
 export default function NavBar() {
   const { user, loading } = useUser();
@@ -17,15 +18,47 @@ export default function NavBar() {
   return (
     <nav style={{ marginLeft: "40px", marginRight: "40px" }}>
       <ul>
-        <li>
-          <strong style={{ fontSize: "40px" }}>Leetcode-Leaderboard</strong>
+        <li
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "20px",
+          }}
+        >
+          <img
+            src={leetcodeLogo}
+            alt="Leetcode Logo"
+            style={{ width: 40, height: 40 }}
+          />
+          <strong style={{ fontSize: "40px" }}>Leetcode Leaderboard</strong>
         </li>
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "25px",
+            height: "25px",
+            borderRadius: "50%",
+            background: "grey",
+            color: "white",
+            fontSize: "12px",
+            fontWeight: "bold",
+            marginLeft: "8px",
+            cursor: "pointer",
+          }}
+          onClick={(e) => handleOpen(e, "infoModal")}
+          data-tooltip="info"
+          data-placement="right"
+        >
+          i
+        </span>
       </ul>
       <ul>
         <li>
           {user ? (
             <a
-              data-tooltip="Settings"
+              data-tooltip="Profile"
               data-placement="bottom"
               style={{ cursor: "pointer" }}
             >
@@ -37,10 +70,12 @@ export default function NavBar() {
               />
             </a>
           ) : (
-            <IoPersonCircle
-              style={{ fontSize: "40px", cursor: "pointer" }}
-              onClick={handleLogin}
-            />
+            <a data-tooltip="Sign In" data-placement="bottom">
+              <IoPersonCircle
+                style={{ fontSize: "40px", cursor: "pointer" }}
+                onClick={handleLogin}
+              />
+            </a>
           )}
         </li>
       </ul>

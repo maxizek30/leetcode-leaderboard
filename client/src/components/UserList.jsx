@@ -68,51 +68,63 @@ function UserList() {
     });
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col"></th>
-          <th scope="col">Name</th>
-          <th scope="col">Username</th>
-          <th scope="col">Easy</th>
-          <th scope="col">Medium</th>
-          <th scope="col">Hard</th>
-          <th scope="col">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sortedUsers.map((user, index) => (
-          <tr
-            key={user.id}
-            onClick={(e) => {
-              handleOpen(e, "coderModal", { user: user });
-            }}
-            style={{ cursor: "pointer" }}
-            className="user-row"
-          >
-            <td>{index + 1}</td>
-            <td scope="row">
-              <img
-                src={user.avatarUrl}
-                alt={`${user.login}'s avatar`}
-                style={{ width: "100px" }}
-              />
-            </td>
-            <td>{user.name}</td>
-            <td>{user.leetcodeUsername}</td>
-            <td>{user.diffStats?.easy ?? 0}</td>
-            <td>{user.diffStats?.medium ?? 0}</td>
-            <td>{user.diffStats?.hard ?? 0}</td>
-            <td>
-              {(user.diffStats?.easy ?? 0) +
-                (user.diffStats?.medium ?? 0) +
-                (user.diffStats?.hard ?? 0)}
-            </td>
+    <div>
+      <style>
+        {`
+          .user-row:hover td {
+            opacity: 0.8;
+          }
+          .user-row {
+            transition: background-color 0.2s ease;
+          }
+        `}
+      </style>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col"></th>
+            <th scope="col">Name</th>
+            <th scope="col">Username</th>
+            <th scope="col">Easy</th>
+            <th scope="col">Medium</th>
+            <th scope="col">Hard</th>
+            <th scope="col">Total</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sortedUsers.map((user, index) => (
+            <tr
+              key={user.id}
+              onClick={(e) => {
+                handleOpen(e, "coderModal", { user: user });
+              }}
+              style={{ cursor: "pointer" }}
+              className="user-row"
+            >
+              <td>{index + 1}</td>
+              <td scope="row">
+                <img
+                  src={user.avatarUrl}
+                  alt={`${user.login}'s avatar`}
+                  style={{ width: "100px" }}
+                />
+              </td>
+              <td>{user.name}</td>
+              <td>{user.leetcodeUsername}</td>
+              <td>{user.diffStats?.easy ?? 0}</td>
+              <td>{user.diffStats?.medium ?? 0}</td>
+              <td>{user.diffStats?.hard ?? 0}</td>
+              <td>
+                {(user.diffStats?.easy ?? 0) +
+                  (user.diffStats?.medium ?? 0) +
+                  (user.diffStats?.hard ?? 0)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
